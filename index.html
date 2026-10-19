@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HzNwbBtlZusf1X5OKGz5e9LmqW5KhaTIv+Y/kynnS64='; style-src 'sha256-KhbxZna9TacWk4Q//CWAdc4/oaiSZ9tjFMXgEChaM7w='; base-uri 'none'; form-action 'none'">
+<title>Open in Mail</title>
+<style>body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:90vh;margin:0;color:#222;background:#f6f6f8;text-align:center;padding:0 1rem}
+#open{display:inline-block;margin-top:1.5rem;padding:1.1rem 2.4rem;font-size:1.4rem;font-weight:600;color:#fff;background:#0a7aff;border-radius:12px;text-decoration:none}
+#open[hidden]{display:none}
+body.error #status{color:#b00020}
+p{font-size:1.1rem;max-width:32rem}
+</style>
+</head>
+<body>
+<p id="status">Loading...</p>
+<a id="open" href="#" hidden>Open in Mail</a>
+<noscript><p>JavaScript is needed to open this email in Apple Mail.</p></noscript>
+<script>(function () {
+  var raw = (location.hash || "").replace(/^#/, "");
+  var status = document.getElementById("status");
+  var btn = document.getElementById("open");
+  function fail(msg) {
+    status.textContent = msg;
+    document.body.className = "error";
+  }
+  if (!/^%3C[A-Za-z0-9._~!$&'*+\-\/=?^`{|}%@]+%3E$/i.test(raw) || raw.length > 998) {
+    fail("This link is missing a valid email Message-ID, so there is nothing to open in Mail.");
+    return;
+  }
+  var id;
+  try { id = decodeURIComponent(raw); } catch (e) { fail("This link has a malformed Message-ID."); return; }
+  if (!/^<[^<>\s"\\]+@[^<>\s"\\]+>$/.test(id)) {
+    fail("This link does not contain a valid email Message-ID.");
+    return;
+  }
+  var url = "message://" + encodeURIComponent(id);
+  btn.href = url;
+  btn.hidden = false;
+  status.textContent = "Opening the email in Apple Mail. If nothing happens, click the button.";
+  location.replace(url);
+  setTimeout(function () { window.close(); }, 1500);
+})();
+</script>
+</body>
+</html>
